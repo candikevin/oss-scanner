@@ -16,11 +16,12 @@ export SCANTOOL := /usr/share/fossology/nomos/agent/nomos
 
 .PHONY: scan
 scan:
+	rm $(NOMOS_OUTPUT_FILE)
 	time find $(SVN_CHECKOUT_DIR) \
 	    -not -type d -not -wholename '*.svn*' -not -wholename '*.git*' \
 	    -exec echo -n "{} " >> $(NOMOS_OUTPUT_FILE) \; \
 	    -exec $(SCANTOOL) {} >> $(NOMOS_OUTPUT_FILE) \;
-	
+
 	grep -v No_license_found $(NOMOS_OUTPUT_FILE) > $(NOMOS_FILTERED_FILE)
 
 .PHONY: report
