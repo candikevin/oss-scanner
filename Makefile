@@ -17,16 +17,15 @@ export REPORT_FILE := report.txt
 
 help:
 	@echo "make scan   - run FOSSology tool on codebase (long task!)"
-	@echo "make report - create report from output of 'make scan'"
-	@echo "              (does not do 'make scan' for you because it takes so long"
+	@echo "make report - create report.txt from output of 'make scan'"
+	@echo "              (does not do 'make scan' for you because it takes so long)"
 	@echo "make clean  - delete scan logs and report.txt"
 	@echo "make clean-report - delete report.txt"
 
 
 # $(REPORT_FILE):
 report:
-	# python main.py $(NOMOS_FILTERED_FILE)
-	python main.py > $(REPORT_FILE)
+	python main.py $(NOMOS_FILTERED_FILE) > $(REPORT_FILE)
 
 # .PHONY: scan
 scan:
