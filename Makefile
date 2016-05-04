@@ -1,7 +1,7 @@
 
-export NOMOS_OUTPUT_FILE := /tmp/nomos.log
-export NOMOS_FILTERED_FILE := /tmp/nomos-licenses.log
-export SVN_CHECKOUT_DIR := ./repos
+export NOMOS_OUTPUT_FILE := logs/nomos.log
+export NOMOS_FILTERED_FILE := logs/nomos-licenses.log
+export SVN_CHECKOUT_DIR := ../repos
 export SCANTOOL := /usr/share/fossology/nomos/agent/nomos
 
 # eh, let jenkins do this
@@ -16,12 +16,11 @@ export SCANTOOL := /usr/share/fossology/nomos/agent/nomos
 
 .PHONY: scan
 scan:
-	echo "GPL" > $(NOMOS_OUTPUT_FILE)
-	echo "No_license_found" >> $(NOMOS_FILTERED_FILE)
-
-	# time find . -not -type d -not -wholename '*.svn*' -not -wholename '*.git*' \
-	#     -exec echo -n "{} " >> $(NOMOS_OUTPUT_FILE) \; \
-	#     -exec $(SCANTOOL) {} >> $(NOMOS_OUTPUT_FILE) \;
+	time find $(SVN_CHECKOUT_DIR) \
+	    -not -type d -not -wholename '*.svn*' -not -wholename '*.git*' \
+	    -exec echo -n "{} " >> $(NOMOS_OUTPUT_FILE) \; \
+	    -exec $(SCANTOOL) {} >> $(NOMOS_OUTPUT_FILE) \;
+	
 	grep -v No_license_found $(NOMOS_OUTPUT_FILE) > $(NOMOS_FILTERED_FILE)
 
 .PHONY: report
