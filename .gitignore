@@ -3,3 +3,4 @@ nomos-licenses.log
 nomos.log
 logs/*
 !logs/.gitkeep
+report.txt

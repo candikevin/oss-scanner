@@ -1,10 +1,6 @@
-# time find . -not -type d -not -wholename '*.svn*' -not -wholename '*.git*' \
-#     -exec echo -n "{} " >> /tmp/nomos.log \; \
-#     -exec /usr/share/fossology/nomos/agent/nomos {} >> /tmp/nomos.log \;
-# cd /tmp
-# grep -v No_license_found nomos.log > nomos-licenses.log
-# 
+#!/usr/bin/env python
 
+import sys
 import os
 from collections import defaultdict
 
@@ -18,7 +14,7 @@ def print_common_ancestor(license, filenames):
         path, _ = os.path.split(path)
         if all([f.startswith(path) for f in filenames]):
             break
-    print path, "\t\t", license
+    print path + "\t" + license
     # verbose:
     # print license
     # for filename in filenames:
@@ -27,7 +23,7 @@ def print_common_ancestor(license, filenames):
     # print
 
 
-def main():
+def main(log_filename='nomos-licenses.log'):
     # keep a hash of license -> filenames.
     # group files by license as we scan,
     #   adding them to a list,
@@ -40,10 +36,11 @@ def main():
     cur_license = ''
     cur_filenames = []
 
-    f = open('nomos-licenses.log', 'r')
+    f = open(log_filename, 'r')
 
     for line in f:
-        tokens = line.lstrip('./').rstrip().split(' ')
+        line = line.lstrip('./').lstrip('../repos/').rstrip()
+        tokens = line.split(' ')
         filename = tokens[0]
         license = tokens[len(tokens) - 1]
 
@@ -67,4 +64,7 @@ def main():
     #             print "   ", filename
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+    else:
+        main()
