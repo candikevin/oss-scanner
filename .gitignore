@@ -1,3 +1,5 @@
 .DS_Store
 nomos-licenses.log
 nomos.log
+logs/*
+!logs/.gitkeep
