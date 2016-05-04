@@ -16,25 +16,32 @@ export REPORT_FILE := report.txt
 # (...)/workspace/oss-scanner/Makefile
 
 help:
-	@echo "make scan   - run FOSSology tool on codebase (long task!)"
-	@echo "make report - create report.txt from output of 'make scan'"
-	@echo "              (does not do 'make scan' for you because it takes so long)"
-	@echo "make clean  - delete scan logs and report.txt"
-	@echo "make clean-report - delete report.txt"
+	@echo "Targets:"
+	@echo "        scan - run FOSSology tool on codebase (long task!)"
+	@echo "      report - create report.txt from output of 'make scan'"
+	@echo "               (does not do 'make scan' for you because it takes so long)"
+	@echo "       clean - delete scan logs and report.txt"
+	@echo "clean-report - delete report.txt"
 
-
-# $(REPORT_FILE):
 report:
 	python main.py $(NOMOS_FILTERED_FILE) > $(REPORT_FILE)
 
 # .PHONY: scan
 scan:
 	rm $(NOMOS_OUTPUT_FILE)
+
+	# untar archives
+	time find $(SVN_CHECKOUT_DIR) -name "*.tar.gz" \
+		-not -type d -not -wholename '*.svn*' -not -wholename '*.git*' \
+		-exec tar xvzf "{}" \;
+
+	# run scan tool
 	time find $(SVN_CHECKOUT_DIR) \
 	    -not -type d -not -wholename '*.svn*' -not -wholename '*.git*' \
 	    -exec echo -n "{} " >> $(NOMOS_OUTPUT_FILE) \; \
 	    -exec $(SCANTOOL) {} >> $(NOMOS_OUTPUT_FILE) \;
 
+	# strip results without licenses
 	grep -v No_license_found $(NOMOS_OUTPUT_FILE) > $(NOMOS_FILTERED_FILE)
 
 clean-report:
