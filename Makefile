@@ -28,8 +28,6 @@ report:
 
 # .PHONY: scan
 scan:
-	rm $(NOMOS_OUTPUT_FILE)
-
 	# untar archives
 	time find $(SVN_CHECKOUT_DIR) -name "*.tar.gz" \
 		-not -type d -not -wholename '*.svn*' -not -wholename '*.git*' \
