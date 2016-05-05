@@ -2,26 +2,33 @@ import sys
 import os
 from collections import defaultdict
 
+USE_HTML = False
+
 def print_common_ancestor(license, filenames):
     # take the first filename
     # remove its last path component
     # check if that string is the beginning of every filename
     # loop
-    path = filenames[0]
+    path = filenames[0][:] # copy
     while len(path) > 0:
         path, _ = os.path.split(path)
         if all([f.startswith(path) for f in filenames]):
             break
-    print path + "\t" + license
-    # verbose:
-    # print license
-    # for filename in filenames:
-    #     print "   ", filename
-    # print license, path
-    # print
+    if USE_HTML:
+        pass
+    else:
+        if len(filenames) == 1:
+            print filenames[0] + "\t" + license
+        else:
+            print path + "\t" + license
+            print "\t\t",
+            for filename in filenames:
+                print filename.replace(path, ''),
+            print
 
 
-def main(log_filename='nomos-licenses.log'):
+
+def main(log_filename='logs/nomos-licenses.log'):
     # keep a hash of license -> filenames.
     # group files by license as we scan,
     #   adding them to a list,
@@ -47,7 +54,9 @@ def main(log_filename='nomos-licenses.log'):
         if license == cur_license:
             cur_filenames.append(filename)
         else:
-            if len(cur_filenames) > 1:
+            if len(cur_filenames) == 0:
+                print_common_ancestor(license, [filename])
+            else:
                 print_common_ancestor(license, cur_filenames)
             cur_license = license
             cur_filenames = []
